@@ -1,8 +1,9 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import Dialog, { ModalFuncProps } from './Modal';
+import type { ModalFuncProps } from './Modal';
+import Dialog from './Modal';
 import ActionButton from '../_util/ActionButton';
-import devWarning from '../_util/devWarning';
+import warning from '../_util/warning';
 import ConfigProvider from '../config-provider';
 import { getTransitionName } from '../_util/motion';
 
@@ -33,6 +34,7 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
     cancelButtonProps,
     direction,
     prefixCls,
+    wrapClassName,
     rootPrefixCls,
     iconPrefixCls,
     bodyStyle,
@@ -42,7 +44,7 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
     focusTriggerAfterClose,
   } = props;
 
-  devWarning(
+  warning(
     !(typeof icon === 'string' && icon.length > 2),
     'Modal',
     `\`icon\` is using ReactNode instead of string naming in v4. Please check \`${icon}\` at https://ant.design/components/icon`,
@@ -84,7 +86,10 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
       <Dialog
         prefixCls={prefixCls}
         className={classString}
-        wrapClassName={classNames({ [`${contentPrefixCls}-centered`]: !!props.centered })}
+        wrapClassName={classNames(
+          { [`${contentPrefixCls}-centered`]: !!props.centered },
+          wrapClassName,
+        )}
         onCancel={() => close({ triggerCancel: true })}
         visible={visible}
         title=""
@@ -106,7 +111,6 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
         closeIcon={closeIcon}
         modalRender={modalRender}
         focusTriggerAfterClose={focusTriggerAfterClose}
-
       >
         <div className={`${contentPrefixCls}-body-wrapper`}>
           <div className={`${contentPrefixCls}-body`}>

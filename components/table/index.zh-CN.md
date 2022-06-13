@@ -9,10 +9,6 @@ cover: https://gw.alipayobjects.com/zos/alicdn/f-SbcX2Lx/Table.svg
 
 展示行列数据。
 
-## 设计师专属
-
-安装 [Kitchen Sketch 插件 💎](https://kitchen.alipay.com/)，两步就可以自动生成 Ant Design 表格组件。
-
 ## 何时使用
 
 - 当有大量结构化的数据需要展现时；
@@ -59,9 +55,13 @@ const columns = [
 <Table dataSource={dataSource} columns={columns} />;
 ```
 
-## API
+## 相关推荐
 
-另外我们封装了 [ProTable](https://procomponents.ant.design/components/table)，在 `antd` Table 之上扩展了更多便捷易用的功能，内置搜索、筛选、刷新等常用表格行为，并为多种类型数据展示提供了内置格式化，欢迎尝试使用。
+- [Kitchen Sketch 插件 💎](https://kitchen.alipay.com/)：设计师神器，两步自动生成 Ant Design 表格组件。
+- [ProTable](https://procomponents.ant.design/components/table) 高级表格：在 `antd` Table 之上扩展了更多便捷易用的功能，内置搜索、筛选、刷新等常用表格行为，并为多种类型数据展示提供了内置格式化。
+- [S2](https://s2.antv.vision/zh) 多维交叉分析表格：[AntV S2 和 Antd Table 有什么区别？](https://zhuanlan.zhihu.com/p/494995642)
+
+## API
 
 ### Table
 
@@ -69,7 +69,7 @@ const columns = [
 | --- | --- | --- | --- | --- |
 | bordered | 是否展示外边框和列边框 | boolean | false |  |
 | columns | 表格列的配置描述，具体项见下表 | [ColumnsType](#Column)\[] | - |  |
-| components | 覆盖默认的 table 元素 | [TableComponents](https://git.io/fANxz) | - |  |
+| components | 覆盖默认的 table 元素 | [TableComponents](https://github.com/react-component/table/blob/75ee0064e54a4b3215694505870c9d6c817e9e4a/src/interface.ts#L129) | - |  |
 | dataSource | 数据数组 | object\[] | - |  |
 | expandable | 配置展开属性 | [expandable](#expandable) | - |  |
 | footer | 表格尾部 | function(currentPageData) | - |  |
@@ -127,8 +127,8 @@ const columns = [
 | colSpan | 表头列合并,设置为 0 时，不渲染 | number | - |  |
 | dataIndex | 列数据在数据项中对应的路径，支持通过数组查询嵌套路径 | string \| string\[] | - |  |
 | defaultFilteredValue | 默认筛选值 | string\[] | - |  |
+| filterResetToDefaultFilteredValue | 点击重置按钮的时候，是否恢复默认筛选值 | boolean | false |  |
 | defaultSortOrder | 默认排序顺序 | `ascend` \| `descend` | - |  |
-| editable | 是否可编辑 | boolean | false |  |
 | ellipsis | 超过宽度将自动省略，暂不支持和排序筛选一起使用。<br />设置为 `true` 或 `{ showTitle?: boolean }` 时，表格布局将变成 `tableLayout="fixed"`。 | boolean \| { showTitle?: boolean } | false | showTitle: 4.3.0 |
 | filterDropdown | 可以自定义筛选菜单，此函数只负责渲染图层，需要自行编写各种交互 | ReactNode \| (props: [FilterDropdownProps](https://github.com/ant-design/ant-design/blob/ecc54dda839619e921c0ace530408871f0281c2a/components/table/interface.tsx#L79)) => ReactNode | - |  |
 | filterDropdownVisible | 用于控制自定义筛选菜单是否可见 | boolean | - |  |
@@ -137,11 +137,11 @@ const columns = [
 | filterIcon | 自定义 filter 图标。 | ReactNode \| (filtered: boolean) => ReactNode | false |  |
 | filterMultiple | 是否多选 | boolean | true |  |
 | filterMode | 指定筛选菜单的用户界面 | 'menu' \| 'tree' | 'menu' | 4.17.0 |
-| filterSearch | 筛选菜单项是否可搜索 | Boolean | false | 4.17.0 |
+| filterSearch | 筛选菜单项是否可搜索 | boolean \| function(input, record):boolean | false | boolean:4.17.0 function:4.19.0 |
 | filters | 表头的筛选菜单项 | object\[] | - |  |
 | fixed | （IE 下无效）列是否固定，可选 true (等效于 left) `left` `right` | boolean \| string | false |  |
 | key | React 需要的 key，如果已经设置了唯一的 `dataIndex`，可以忽略这个属性 | string | - |  |
-| render | 生成复杂数据的渲染函数，参数分别为当前行的值，当前行数据，行索引，@return 里面可以设置表格[行/列合并](#components-table-demo-colspan-rowspan) | function(text, record, index) {} | - |  |
+| render | 生成复杂数据的渲染函数，参数分别为当前行的值，当前行数据，行索引 | function(text, record, index) {} | - |  |
 | responsive | 响应式 breakpoint 配置列表。未设置则始终可见。 | [Breakpoint](https://github.com/ant-design/ant-design/blob/015109b42b85c63146371b4e32b883cf97b088e8/components/_util/responsiveObserve.ts#L1)\[] | - | 4.2.0 |
 | shouldCellUpdate | 自定义单元格渲染时机 | (record, prevRecord) => boolean | - | 4.3.0 |
 | showSorterTooltip | 表头显示下一次排序的 tooltip 提示, 覆盖 table 中 `showSorterTooltip` | boolean \| [Tooltip props](/components/tooltip/#API) | true |  |
@@ -185,17 +185,13 @@ const columns = [
 | expandedRowKeys | 展开的行，控制属性 | string\[] | - |  |
 | expandedRowRender | 额外的展开行 | function(record, index, indent, expanded): ReactNode | - |  |
 | expandIcon | 自定义展开图标，参考[示例](https://codesandbox.io/s/fervent-bird-nuzpr) | function(props): ReactNode | - |  |
-| expandIconColumnIndex | 自定义展开按钮的列顺序，`-1` 时不展示 | number | - |  |
 | expandRowByClick | 通过点击行来展开子行 | boolean | false |  |
 | fixed | 控制展开图标是否固定，可选 true `left` `right` | boolean \| string | false | 4.16.0 |
 | indentSize | 展示树形数据时，每层缩进的宽度，以 px 为单位 | number | 15 |  |
 | rowExpandable | 设置是否允许行展开 | (record) => boolean | - |  |
+| showExpandColumn | 设置是否展示行展开列 | boolean | true | 4.18.0 |
 | onExpand | 点击展开图标时触发 | function(expanded, record) | - |  |
 | onExpandedRowsChange | 展开的行变化时触发 | function(expandedRows) | - |  |
-
-- `fixed`
-  - 当设置为 true 或 `left` 且 `expandIconColumnIndex` 未设置或为 0 时，开启固定
-  - 当设置为 true 或 `right` 且 `expandIconColumnIndex` 设置为表格列数时，开启固定
 
 ### rowSelection
 
@@ -215,11 +211,12 @@ const columns = [
 | defaultSelectedRowKeys | 默认选中项的 key 数组 | string\[] \| number\[] | \[] |  |
 | selections | 自定义选择项 [配置项](#selection), 设为 `true` 时使用默认选择项 | object\[] \| boolean | true |  |
 | type | 多选/单选 | `checkbox` \| `radio` | `checkbox` |  |
-| onChange | 选中项发生变化时的回调 | function(selectedRowKeys, selectedRows) | - |  |
+| onChange | 选中项发生变化时的回调 | function(selectedRowKeys, selectedRows, info: { type }) | - | `info.type`: 4.21.0 |
 | onSelect | 用户手动选择/取消选择某行的回调 | function(record, selected, selectedRows, nativeEvent) | - |  |
 | onSelectAll | 用户手动选择/取消选择所有行的回调 | function(selected, selectedRows, changeRows) | - |  |
 | onSelectInvert | 用户手动选择反选的回调 | function(selectedRowKeys) | - |  |
 | onSelectNone | 用户清空选择的回调 | function() | - |  |
+| onSelectMultiple | 用户使用键盘 shift 选择多行的回调 | function(selected, selectedRows, changeRows) | - |  |
 
 ### scroll
 
@@ -320,3 +317,7 @@ Table 移除了在 v3 中废弃的 `onRowClick`、`onRowDoubleClick`、`onRowMou
 ### 固定列穿透到最上层该怎么办？
 
 固定列通过 `z-index` 属性将其悬浮于非固定列之上，这使得有时候你会发现在 Table 上放置遮罩层时固定列会被透过的情况。为遮罩层设置更高的 `z-index` 覆盖住固定列即可。
+
+### 如何自定义渲染可选列的勾选框（比如增加 Tooltip）？
+
+自 `4.1.0` 起，可以通过 [rowSelection](https://ant.design/components/table-cn/#rowSelection) 的 `renderCell` 属性控制，可以参考此处 [Demo](https://codesandbox.io/s/table-row-tooltip-v79j2v) 实现展示 Tooltip 需求或其他自定义的需求。

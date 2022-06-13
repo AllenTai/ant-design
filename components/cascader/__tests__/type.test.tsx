@@ -1,6 +1,7 @@
 import { mount } from 'enzyme';
 import * as React from 'react';
-import Cascader, { BasicDataNode } from '..';
+import type { BaseOptionType } from '..';
+import Cascader from '..';
 
 describe('Cascader.typescript', () => {
   it('options value', () => {
@@ -50,7 +51,7 @@ describe('Cascader.typescript', () => {
   });
 
   it('Generic', () => {
-    interface MyOptionData extends BasicDataNode {
+    interface MyOptionData extends BaseOptionType {
       customizeLabel: string;
       customizeValue: string;
       customizeChildren?: MyOptionData[];
@@ -71,6 +72,20 @@ describe('Cascader.typescript', () => {
           },
         ]}
       />,
+    );
+    expect(wrapper).toBeTruthy();
+  });
+
+  it('single onChange', () => {
+    const wrapper = mount(
+      <Cascader multiple={false} onChange={(values: (string | number)[]) => values} />,
+    );
+    expect(wrapper).toBeTruthy();
+  });
+
+  it('multiple onChange', () => {
+    const wrapper = mount(
+      <Cascader multiple onChange={(values: (string | number)[][]) => values} />,
     );
     expect(wrapper).toBeTruthy();
   });

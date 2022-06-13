@@ -8,7 +8,7 @@ const themeConfig = require('./themeConfig');
 const { webpack } = getWebpackConfig;
 
 const isDev = process.env.NODE_ENV === 'development';
-const { ANT_THEME } = process.env;
+const { ANT_THEME, DEV_THEME } = process.env;
 
 function alertBabelConfig(rules) {
   rules.forEach(rule => {
@@ -58,7 +58,7 @@ module.exports = {
   lessConfig: {
     javascriptEnabled: true,
     modifyVars: {
-      'root-entry-name': ANT_THEME || 'variable',
+      'root-entry-name': ANT_THEME || DEV_THEME || 'variable',
     },
   },
   webpackConfig(config) {
@@ -87,6 +87,7 @@ module.exports = {
       };
     } else if (process.env.ESBUILD) {
       // use esbuild
+      config.optimization.minimize = true;
       config.optimization.minimizer = [
         new ESBuildMinifyPlugin({
           target: 'es2015',
@@ -111,6 +112,14 @@ module.exports = {
 
     delete config.module.noParse;
 
+    // Use dev mod to speed up site preview build
+    // This is used for CI preview build in `preview-build.yml`
+    if (process.env.SITE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log('Site build with development mode...');
+      config.mode = 'development';
+    }
+
     if (ANT_THEME) {
       config.mode = 'development';
       config.plugins.forEach(plugin => {
@@ -119,6 +128,64 @@ module.exports = {
           plugin.options.filename = `${ANT_THEME}.css`;
         }
       });
+
+      // Remove preset target
+      config.module.rules.forEach(rule => {
+        if (rule.options?.presets?.[1]?.[0]?.includes('preset-env')) {
+          delete rule.options.presets[1][1];
+          delete rule.options.plugins;
+        }
+      });
+
+      config.optimization.minimize = false;
+      delete config.optimization.minimizer;
+
+      config.externals = [
+        /^rc-.*/,
+        /^react.*/,
+        /^@ant-design\/.*/,
+        /^@babel\/.*/,
+        /^@algolia\/.*/,
+        /^@docsearch\/.*/,
+        /autocomplete.js/,
+        /docsearch.js/,
+        /.*\.md/,
+        /lodash/,
+        /jquery/,
+        /moment/,
+        /core-js/,
+        /jsonml/,
+        /ramda/,
+        /tinycolor/,
+        /bisheng-plugin/,
+      ];
+    }
+
+    // Split chunks
+    if (config.mode === 'production') {
+      config.optimization.splitChunks = {
+        ...config.optimization.splitChunks,
+        cacheGroups: {
+          vendors: {
+            test: /[/\\]node_modules[/\\]@ant-design[/\\]icon/,
+            name: 'anticon',
+            chunks: 'initial',
+            maxSize: 1024 * 1024,
+          },
+          components: {
+            test(module) {
+              return (
+                module.resource &&
+                module.resource.includes('ant-design/components') &&
+                !module.resource.includes('demo') &&
+                !module.resource.endsWith('md')
+              );
+            },
+            name: 'components',
+            chunks: 'initial',
+          },
+        },
+      };
     }
 
     return config;
